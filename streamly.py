@@ -28,6 +28,7 @@ if not OPENAI_API_KEY:
 
 # Create OpenAI client
 client = OpenAI(api_key=OPENAI_API_KEY)
+ASSISTANT_ID = st.secrets["OPENAI_ASSISTANT_ID"]
 
 # Streamlit Page Configuration
 st.set_page_config(
@@ -163,6 +164,11 @@ def get_latest_update_from_json(keyword, latest_updates):
                 if keyword.lower() in key.lower() or keyword.lower() in value.lower():
                     return f"Section: {section}\nSub-Category: {sub_key}\n{key}: {value}"
     return "No updates found for the specified keyword."
+def get_or_create_thread():
+    if not st.session_state.thread_id:
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+    return st.session_state.thread_id
 
 def construct_formatted_message(latest_updates):
     """
@@ -192,29 +198,22 @@ def construct_formatted_message(latest_updates):
     return "\n".join(formatted_message)
 
 @st.cache_data(show_spinner=False)
+def get_latest_update_from_json(keyword, latest_updates):
+    for section in ["Highlights", "Notable Changes", "Other Changes"]:
+        for sub_key, sub_value in latest_updates.get(section, {}).items():
+            for key, value in sub_value.items():
+                if keyword.lower() in key.lower() or keyword.lower() in value.lower():
+                    return f"Section: {section}\nSub-Category: {sub_key}\n{key}: {value}"
+    return "No updates found for the specified keyword."
+
+
 def on_chat_submit(chat_input, latest_updates):
-    """
-    Handle chat input submissions and interact with the OpenAI API.
-
-    Parameters:
-    - chat_input (str): The chat input from the user.
-    - latest_updates (dict): The latest Streamlit updates fetched from a JSON file or API.
-
-    Returns:
-    - None: Updates the chat history in Streamlit's session state.
-    """
-    user_input = chat_input.strip().lower()
-
-    if 'conversation_history' not in st.session_state:
-        st.session_state.conversation_history = initialize_conversation()
-
-    st.session_state.conversation_history.append({"role": "user", "content": user_input})
+    user_input = chat_input.strip()
 
     try:
-        model_engine = "gpt-4o-mini"
         assistant_reply = ""
 
-        if "latest updates" in user_input:
+        if "latest updates" in user_input.lower():
             assistant_reply = "Here are the latest highlights from Streamlit:\n"
             highlights = latest_updates.get("Highlights", {})
             if highlights:
@@ -224,13 +223,39 @@ def on_chat_submit(chat_input, latest_updates):
             else:
                 assistant_reply = "No highlights found."
         else:
-            response = client.chat.completions.create(
-                model=model_engine,
-                messages=st.session_state.conversation_history
-            )
-            assistant_reply = response.choices[0].message.content
+            thread_id = get_or_create_thread()
 
-        st.session_state.conversation_history.append({"role": "assistant", "content": assistant_reply})
+            client.beta.threads.messages.create(
+                thread_id=thread_id,
+                role="user",
+                content=user_input
+            )
+
+            run = client.beta.threads.runs.create_and_poll(
+                thread_id=thread_id,
+                assistant_id=ASSISTANT_ID
+            )
+
+            if run.status != "completed":
+                raise OpenAIError(f"Run status: {run.status}")
+
+            messages = client.beta.threads.messages.list(
+                thread_id=thread_id,
+                order="desc",
+                limit=10
+            )
+
+            assistant_reply = "Nu am primit un răspuns de la asistent."
+            for msg in messages.data:
+                if msg.role == "assistant":
+                    text_parts = []
+                    for content in msg.content:
+                        if content.type == "text":
+                            text_parts.append(content.text.value)
+                    if text_parts:
+                        assistant_reply = "\n".join(text_parts)
+                        break
+
         st.session_state.history.append({"role": "user", "content": user_input})
         st.session_state.history.append({"role": "assistant", "content": assistant_reply})
 
@@ -239,11 +264,12 @@ def on_chat_submit(chat_input, latest_updates):
         st.error(f"OpenAI Error: {str(e)}")
 
 def initialize_session_state():
-    """Initialize session state variables."""
     if "history" not in st.session_state:
         st.session_state.history = []
-    if 'conversation_history' not in st.session_state:
+    if "conversation_history" not in st.session_state:
         st.session_state.conversation_history = []
+    if "thread_id" not in st.session_state:
+        st.session_state.thread_id = None
 
 def main():
     """
