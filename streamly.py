@@ -1,4 +1,3 @@
-import openai
 import streamlit as st
 import logging
 from PIL import Image, ImageEnhance
@@ -24,8 +23,11 @@ if not OPENAI_API_KEY:
     st.stop()
 
 # Assign OpenAI API Key
-openai.api_key = OPENAI_API_KEY
-client = openai.OpenAI()
+#openai.api_key = OPENAI_API_KEY
+#client = openai.OpenAI()
+
+# Create OpenAI client
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Streamlit Page Configuration
 st.set_page_config(
