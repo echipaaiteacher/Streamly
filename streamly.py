@@ -32,29 +32,19 @@ ASSISTANT_ID = st.secrets["OPENAI_ASSISTANT_ID"]
 
 # Streamlit Page Configuration
 st.set_page_config(
-    page_title="Streamly - An Intelligent Streamlit Assistant",
-    page_icon="imgs/avatar_streamly.png",
+    page_title="AI Teacher Web App",
+    page_icon="imgs/logo.jpg",
     layout="wide",
-    initial_sidebar_state="auto",
+    initial_sidebar_state="expanded",
     menu_items={
         "Get help": "https://github.com/AdieLaine/Streamly",
         "Report a bug": "https://github.com/AdieLaine/Streamly",
         "About": """
-            ## Streamly Streamlit Assistant
-            ### Powered using GPT-4o-mini
-
-            **GitHub**: https://github.com/AdieLaine/
-
-            The AI Assistant named, Streamly, aims to provide the latest updates from Streamlit,
-            generate code snippets for Streamlit widgets,
-            and answer questions about Streamlit's latest features, issues, and more.
-            Streamly has been trained on the latest Streamlit updates and documentation.
+            ## AI Teacher Web App
+            An AI-powered educational assistant designed to help you learn.
         """
     }
 )
-
-# Streamlit Title
-st.title("Streamly Streamlit Assistant")
 
 def img_to_base64(image_path):
     """Convert image to base64."""
@@ -134,14 +124,12 @@ def initialize_conversation():
     Returns:
     - list: Initialized conversation history.
     """
-    assistant_message = "Hello! I am Streamly. How can I assist you with Streamlit today?"
+    assistant_message = "Hello! 👋 I'm your AI Teacher, here to help you learn anything you'd like. Whether it's math, science, history, languages, or any other subject, I'm ready to assist you. What would you like to explore today?"
 
     conversation_history = [
-        {"role": "system", "content": "You are Streamly, a specialized AI assistant trained in Streamlit."},
-        {"role": "system", "content": "Streamly, is powered by the OpenAI GPT-4o-mini model, released on July 18, 2024."},
-        {"role": "system", "content": "You are trained up to Streamlit Version 1.36.0, release on June 20, 2024."},
+        {"role": "system", "content": "You are AI Teacher, a specialized AI educational assistant."},
+        {"role": "system", "content": "You are powered by the OpenAI GPT-4o-mini model."},
         {"role": "system", "content": "Refer to conversation history to provide context to your response."},
-        {"role": "system", "content": "You were created by Madie Laine, an OpenAI Researcher."},
         {"role": "assistant", "content": assistant_message}
     ]
     return conversation_history
@@ -278,98 +266,180 @@ def main():
     initialize_session_state()
 
     if not st.session_state.history:
-        initial_bot_message = "Hello! How can I assist you with Streamlit today?"
+        initial_bot_message = "Hello! 👋 I'm your AI Teacher, here to help you learn anything you'd like. Whether it's math, science, history, languages, or any other subject, I'm ready to assist you. What would you like to explore today?"
         st.session_state.history.append({"role": "assistant", "content": initial_bot_message})
         st.session_state.conversation_history = initialize_conversation()
 
-    # Insert custom CSS for glowing effect
+    # Apply custom CSS for the updated AI Teacher design (Blue/Orange theme based on the logo)
     st.markdown(
         """
         <style>
-        .cover-glow {
-            width: 100%;
-            height: auto;
-            padding: 3px;
-            box-shadow: 
-                0 0 5px #330000,
-                0 0 10px #660000,
-                0 0 15px #990000,
-                0 0 20px #CC0000,
-                0 0 25px #FF0000,
-                0 0 30px #FF3333,
-                0 0 35px #FF6666;
-            position: relative;
-            z-index: -1;
-            border-radius: 45px;
+        /* Main background and overall text */
+        [data-testid="stAppViewContainer"] {
+            background-color: #ffdf59; /* Yellow background from the provided picture */
+        }
+        
+        /* Sidebar styling */
+        [data-testid="stSidebar"] {
+            background-color: #00a8e8; /* Bright Cyan/Blue from the logo */
+            color: #ffffff;
+        }
+        [data-testid="stSidebar"] * {
+            color: #ffffff;
+        }
+        
+        /* Headings in sidebar */
+        .sidebar-heading {
+            color: #ff7f00; /* Vibrant Orange from the logo */
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Features list */
+        .feature-item {
+            margin-bottom: 0.6rem;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .feature-item span {
+            color: #0b132b; /* Dark Navy Blue for contrast against cyan background */
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        /* Subject pills */
+        .subject-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .subject-pill {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.6); /* White accent border for contrast against blue */
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .subject-pill:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .subject-pill span {
+            margin-right: 6px;
+        }
+        
+        /* Primary button (Clear Chat) */
+        div[data-testid="column"] button {
+            background-color: #00a8e8 !important; /* Cyan/Blue for contrast against the orange background */
+            color: white !important;
+            border: none !important;
+            font-weight: bold;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 4px 6px rgba(0, 168, 232, 0.2);
+            transition: all 0.2s ease;
+        }
+        div[data-testid="column"] button:hover {
+            background-color: #008fcc !important;
+            transform: translateY(-1px);
+        }
+        
+        /* Chat header and UI improvements */
+        .chat-header {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #0b132b;
+            margin: 0;
+            padding-bottom: 1rem;
         }
         </style>
         """,
         unsafe_allow_html=True,
     )
 
-    # Load and display sidebar image
-    img_path = "imgs/sidebar_streamly_avatar.png"
+    # Sidebar Content
+    img_path = "imgs/logo.jpg"
     img_base64 = img_to_base64(img_path)
     if img_base64:
         st.sidebar.markdown(
-            f'<img src="data:image/png;base64,{img_base64}" class="cover-glow">',
+            f'<div style="display:flex; align-items:center; gap:12px; margin-bottom: 20px;">'
+            f'<img src="data:image/jpeg;base64,{img_base64}" style="width: 60px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">'
+            f'<h1 style="margin:0; color:white; font-size: 1.8rem; font-weight: 800;">AI Teacher</h1>'
+            f'</div>',
             unsafe_allow_html=True,
         )
-
-    st.sidebar.markdown("---")
-
-    # Sidebar for Mode Selection
-    mode = st.sidebar.radio("Select Mode:", options=["Latest Updates", "Chat with Streamly"], index=1)
-
-    st.sidebar.markdown("---")
-
-    # Display basic interactions
-    show_basic_info = st.sidebar.checkbox("Show Basic Interactions", value=True)
-    if show_basic_info:
-        st.sidebar.markdown("""
-        ### Basic Interactions
-        - **Ask About Streamlit**: Type your questions about Streamlit's latest updates, features, or issues.
-        - **Search for Code**: Use keywords like 'code example', 'syntax', or 'how-to' to get relevant code snippets.
-        - **Navigate Updates**: Switch to 'Updates' mode to browse the latest Streamlit updates in detail.
-        """)
-
-    # Display advanced interactions
-    show_advanced_info = st.sidebar.checkbox("Show Advanced Interactions", value=False)
-    if show_advanced_info:
-        st.sidebar.markdown("""
-        ### Advanced Interactions
-        - **Generate an App**: Use keywords like **generate app**, **create app** to get a basic Streamlit app code.
-        - **Code Explanation**: Ask for **code explanation**, **walk me through the code** to understand the underlying logic of Streamlit code snippets.
-        - **Project Analysis**: Use **analyze my project**, **technical feedback** to get insights and recommendations on your current Streamlit project.
-        - **Debug Assistance**: Use **debug this**, **fix this error** to get help with troubleshooting issues in your Streamlit app.
-        """)
-
-    st.sidebar.markdown("---")
-
-    # Load and display image with glowing effect
-    img_path = "imgs/stsidebarimg.png"
-    img_base64 = img_to_base64(img_path)
-    if img_base64:
-        st.sidebar.markdown(
-            f'<img src="data:image/png;base64,{img_base64}" class="cover-glow">',
-            unsafe_allow_html=True,
-        )
-
-    if mode == "Chat with Streamly":
-        chat_input = st.chat_input("Ask me about Streamlit updates:")
-        if chat_input:
-            latest_updates = load_streamlit_updates()
-            on_chat_submit(chat_input, latest_updates)
-
-        # Display chat history
-        for message in st.session_state.history[-NUMBER_OF_MESSAGES_TO_DISPLAY:]:
-            role = message["role"]
-            avatar_image = "imgs/avatar_streamly.png" if role == "assistant" else "imgs/stuser.png" if role == "user" else None
-            with st.chat_message(role, avatar=avatar_image):
-                st.write(message["content"])
-
     else:
-        display_streamlit_updates()
+        st.sidebar.markdown("<h1 style='color:white; font-size: 2rem;'>AI Teacher</h1>", unsafe_allow_html=True)
+        
+    st.sidebar.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin: 10px 0;'>", unsafe_allow_html=True)
+    
+    st.sidebar.markdown("<div class='sidebar-heading'>ABOUT</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("""
+    <div style='font-size: 0.95rem; line-height: 1.5; color: rgba(255,255,255,0.85);'>
+    An AI-powered educational assistant designed to help you learn across multiple subjects including Mathematics, History, and Romanian Language.
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.sidebar.markdown("<div class='sidebar-heading'>FEATURES</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("""
+    <div class='feature-item'><span>•</span>Interactive conversational learning</div>
+    <div class='feature-item'><span>•</span>Subject-specific tutoring</div>
+    <div class='feature-item'><span>•</span>Step-by-step explanations</div>
+    <div class='feature-item'><span>•</span>24/7 learning support</div>
+    """, unsafe_allow_html=True)
+
+    st.sidebar.markdown("<div class='sidebar-heading'>HOW TO USE</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("""
+    <div style='font-size: 0.95rem; line-height: 1.5; color: rgba(255,255,255,0.85);'>
+    Simply type your question in the chat below and get instant, personalized responses. Ask about any topic, request explanations, or seek help with homework.
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.sidebar.markdown("<div class='sidebar-heading'>SUPPORTED SUBJECTS</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("""
+    <div class='subject-container'>
+        <div class='subject-pill'><span>📐</span> Mathematics</div>
+        <div class='subject-pill'><span>📜</span> History</div>
+        <div class='subject-pill'><span>🇷🇴</span> Romanian</div>
+        <div class='subject-pill'><span>🔬</span> Science</div>
+        <div class='subject-pill'><span>💻</span> Programming</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Main Chat Area
+    st.write("") # small padding
+    col1, col2 = st.columns([5, 1])
+    with col1:
+        st.markdown("<h2 class='chat-header'>Chat</h2>", unsafe_allow_html=True)
+    with col2:
+        # Pushing the button slightly down to align with the text
+        st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
+        if st.button("🔄 Clear Chat"):
+            st.session_state.history = []
+            st.session_state.conversation_history = initialize_conversation()
+            st.rerun()
+
+    # Chat Input Processing
+    chat_input = st.chat_input("Ask your AI teacher anything...")
+    if chat_input:
+        latest_updates = load_streamlit_updates()
+        on_chat_submit(chat_input, latest_updates)
+
+    # Display chat history sequentially
+    for message in st.session_state.history[-NUMBER_OF_MESSAGES_TO_DISPLAY:]:
+        role = message["role"]
+        # Use robot emoji for assistant, default for user
+        avatar_image = "🤖" if role == "assistant" else "👤"
+        with st.chat_message(role, avatar=avatar_image):
+            st.write(message["content"])
 
 if __name__ == "__main__":
     main()

@@ -2,5 +2,5 @@ streamlit
 streamlit-chat
 openai
 requests
-Image
+Pillow
 langchain
