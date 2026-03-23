@@ -276,12 +276,20 @@ def main():
         <style>
         /* Main background and overall text */
         [data-testid="stAppViewContainer"] {
-            background-color: #ffdf59; /* Yellow background from the provided picture */
+            background-color: #ffffff; /* White top and bottom sections */
+        }
+        
+        /* Light blue area specifically for chat messages */
+        [data-testid="stChatMessage"] {
+            background-color: #eef5fc !important; /* Light blue chat bubbles/area */
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.8rem;
         }
         
         /* Sidebar styling */
         [data-testid="stSidebar"] {
-            background-color: #00a8e8; /* Bright Cyan/Blue from the logo */
+            background-color: #1b3a97; /* Royal/Navy Blue exactly as in the image */
             color: #ffffff;
         }
         [data-testid="stSidebar"] * {
@@ -290,44 +298,51 @@ def main():
         
         /* Headings in sidebar */
         .sidebar-heading {
-            color: #ff7f00; /* Vibrant Orange from the logo */
-            font-weight: 800;
-            font-size: 1.1rem;
-            margin-top: 2rem;
-            margin-bottom: 0.8rem;
+            color: #ff7f00; /* Vibrant Orange accents */
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         
         /* Features list */
         .feature-item {
-            margin-bottom: 0.6rem;
-            font-size: 0.95rem;
-            line-height: 1.4;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            line-height: 1.3;
         }
         .feature-item span {
-            color: #0b132b; /* Dark Navy Blue for contrast against cyan background */
+            color: #ff7f00; /* Vibrant Orange bullets */
             margin-right: 8px;
             font-weight: bold;
+            font-size: 1.3rem; /* Make the dot stand out */
+            line-height: 0;
         }
         
         /* Subject pills */
         .subject-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 6px;
+            margin-top: 5px;
         }
         .subject-pill {
             display: inline-flex;
             align-items: center;
             background-color: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.6); /* White accent border for contrast against blue */
-            border-radius: 20px;
-            padding: 6px 14px;
-            font-size: 0.85rem;
+            border-radius: 15px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
             color: white;
             transition: background-color 0.2s;
+        }
+        
+        /* Chat message text color to be black */
+        [data-testid="stChatMessageContent"] * {
+            color: #000000 !important; /* Black text */
         }
         .subject-pill:hover {
             background-color: rgba(255, 255, 255, 0.3);
@@ -338,17 +353,17 @@ def main():
         
         /* Primary button (Clear Chat) */
         div[data-testid="column"] button {
-            background-color: #00a8e8 !important; /* Cyan/Blue for contrast against the orange background */
+            background-color: #ff7f00 !important; /* Orange button */
             color: white !important;
             border: none !important;
             font-weight: bold;
             border-radius: 8px;
             padding: 0.5rem 1rem;
-            box-shadow: 0 4px 6px rgba(0, 168, 232, 0.2);
+            box-shadow: 0 4px 6px rgba(255, 127, 0, 0.2);
             transition: all 0.2s ease;
         }
         div[data-testid="column"] button:hover {
-            background-color: #008fcc !important;
+            background-color: #e67300 !important;
             transform: translateY(-1px);
         }
         
@@ -356,9 +371,19 @@ def main():
         .chat-header {
             font-size: 2rem;
             font-weight: 800;
-            color: #0b132b;
+            color: #000000 !important; /* Black Header */
             margin: 0;
             padding-bottom: 1rem;
+        }
+        
+        /* Send Button Styling */
+        [data-testid="stChatInputSubmitButton"] {
+            background-color: #ff7f00 !important;
+            border-radius: 8px !important;
+        }
+        [data-testid="stChatInputSubmitButton"] svg {
+            fill: #ffffff !important;
+            color: #ffffff !important;
         }
         </style>
         """,
@@ -370,35 +395,37 @@ def main():
     img_base64 = img_to_base64(img_path)
     if img_base64:
         st.sidebar.markdown(
-            f'<div style="display:flex; align-items:center; gap:12px; margin-bottom: 20px;">'
-            f'<img src="data:image/jpeg;base64,{img_base64}" style="width: 60px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">'
-            f'<h1 style="margin:0; color:white; font-size: 1.8rem; font-weight: 800;">AI Teacher</h1>'
+            f'<div style="display:flex; align-items:center; gap:20px; margin-top: 5px; margin-bottom: 15px;">'
+            f'<div style="background-color:white; padding:5px; height: 60px; width: 60px; display:flex; align-items:center; justify-content:center; border-radius: 12px;">'
+            f'<img src="data:image/jpeg;base64,{img_base64}" style="width: 50px;">'
+            f'</div>'
+            f'<h1 style="margin:0; color:#ff7f00; font-size: 1.6rem; font-weight: bold;">AI Teacher</h1>'
             f'</div>',
             unsafe_allow_html=True,
         )
     else:
-        st.sidebar.markdown("<h1 style='color:white; font-size: 2rem;'>AI Teacher</h1>", unsafe_allow_html=True)
-        
-    st.sidebar.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin: 10px 0;'>", unsafe_allow_html=True)
+        st.sidebar.markdown("<h1 style='color:#ff7f00; font-size: 2rem;'>AI Teacher</h1>", unsafe_allow_html=True)
+    
+    # (Removed the explicit <hr> line separating logo and ABOUT text so it perfectly matches the image)
     
     st.sidebar.markdown("<div class='sidebar-heading'>ABOUT</div>", unsafe_allow_html=True)
     st.sidebar.markdown("""
-    <div style='font-size: 0.95rem; line-height: 1.5; color: rgba(255,255,255,0.85);'>
+    <div style='font-size: 0.9rem; line-height: 1.4; color: white;'>
     An AI-powered educational assistant designed to help you learn across multiple subjects including Mathematics, History, and Romanian Language.
     </div>
     """, unsafe_allow_html=True)
     
     st.sidebar.markdown("<div class='sidebar-heading'>FEATURES</div>", unsafe_allow_html=True)
     st.sidebar.markdown("""
-    <div class='feature-item'><span>•</span>Interactive conversational learning</div>
-    <div class='feature-item'><span>•</span>Subject-specific tutoring</div>
-    <div class='feature-item'><span>•</span>Step-by-step explanations</div>
-    <div class='feature-item'><span>•</span>24/7 learning support</div>
+    <div class='feature-item'><span>.</span>Interactive conversational learning</div>
+    <div class='feature-item'><span>.</span>Subject-specific tutoring</div>
+    <div class='feature-item'><span>.</span>Step-by-step explanations</div>
+    <div class='feature-item'><span>.</span>24/7 learning support</div>
     """, unsafe_allow_html=True)
 
     st.sidebar.markdown("<div class='sidebar-heading'>HOW TO USE</div>", unsafe_allow_html=True)
     st.sidebar.markdown("""
-    <div style='font-size: 0.95rem; line-height: 1.5; color: rgba(255,255,255,0.85);'>
+    <div style='font-size: 0.9rem; line-height: 1.4; color: white;'>
     Simply type your question in the chat below and get instant, personalized responses. Ask about any topic, request explanations, or seek help with homework.
     </div>
     """, unsafe_allow_html=True)
@@ -413,6 +440,8 @@ def main():
         <div class='subject-pill'><span>💻</span> Programming</div>
     </div>
     """, unsafe_allow_html=True)
+
+    st.sidebar.markdown("<div style='border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; margin-top: 1rem; text-align: center; color: white; font-size: 0.85rem;'>Powered by AI Technology</div>", unsafe_allow_html=True)
 
     # Main Chat Area
     st.write("") # small padding
@@ -436,8 +465,8 @@ def main():
     # Display chat history sequentially
     for message in st.session_state.history[-NUMBER_OF_MESSAGES_TO_DISPLAY:]:
         role = message["role"]
-        # Use robot emoji for assistant, default for user
-        avatar_image = "🤖" if role == "assistant" else "👤"
+        # Use logo for assistant, default for user
+        avatar_image = "imgs/logo.jpg" if role == "assistant" else "👤"
         with st.chat_message(role, avatar=avatar_image):
             st.write(message["content"])
 
