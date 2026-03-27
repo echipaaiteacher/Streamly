@@ -46,6 +46,7 @@ st.set_page_config(
     }
 )
 
+@st.cache_data(show_spinner=False)
 def img_to_base64(image_path):
     """Convert image to base64."""
     try:
