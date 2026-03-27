@@ -395,7 +395,7 @@ def main():
     img_base64 = img_to_base64(img_path)
     if img_base64:
         st.sidebar.markdown(
-            f'<div style="display:flex; align-items:center; gap:20px; margin-top: 5px; margin-bottom: 15px;">'
+            f'<div style="display:flex; align-items:center; gap:20px; margin-top: -30px; margin-bottom: 15px;">'
             f'<div style="background-color:white; padding:5px; height: 60px; width: 60px; display:flex; align-items:center; justify-content:center; border-radius: 12px;">'
             f'<img src="data:image/jpeg;base64,{img_base64}" style="width: 50px;">'
             f'</div>'
