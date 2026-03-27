@@ -125,13 +125,10 @@ def initialize_conversation():
     Returns:
     - list: Initialized conversation history.
     """
-    assistant_message = "Hello! 👋 I'm your AI Teacher, here to help you learn anything you'd like. Whether it's math, science, history, languages, or any other subject, I'm ready to assist you. What would you like to explore today?"
-
     conversation_history = [
         {"role": "system", "content": "You are AI Teacher, a specialized AI educational assistant."},
         {"role": "system", "content": "You are powered by the OpenAI GPT-4o-mini model."},
-        {"role": "system", "content": "Refer to conversation history to provide context to your response."},
-        {"role": "assistant", "content": assistant_message}
+        {"role": "system", "content": "Refer to conversation history to provide context to your response."}
     ]
     return conversation_history
 
@@ -266,9 +263,7 @@ def main():
     """
     initialize_session_state()
 
-    if not st.session_state.history:
-        initial_bot_message = "Hello! 👋 I'm your AI Teacher, here to help you learn anything you'd like. Whether it's math, science, history, languages, or any other subject, I'm ready to assist you. What would you like to explore today?"
-        st.session_state.history.append({"role": "assistant", "content": initial_bot_message})
+    if not st.session_state.history and not st.session_state.conversation_history:
         st.session_state.conversation_history = initialize_conversation()
 
     # Apply custom CSS for the updated AI Teacher design (Blue/Orange theme based on the logo)
