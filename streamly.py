@@ -358,18 +358,19 @@ def main():
         }
         
         /* Primary button (Clear Chat) */
-        div[data-testid="column"] button {
+        [data-testid="stBaseButton-secondary"] {
             background-color: #ff7f00 !important; /* Orange button */
             color: white !important;
-            border: none !important;
+            border: 1px solid #ff7f00 !important;
             font-weight: bold;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
+            border-radius: 8px !important;
+            padding: 0.5rem 1rem !important;
             box-shadow: 0 4px 6px rgba(255, 127, 0, 0.2);
             transition: all 0.2s ease;
         }
-        div[data-testid="column"] button:hover {
+        [data-testid="stBaseButton-secondary"]:hover {
             background-color: #e67300 !important;
+            border-color: #e67300 !important;
             transform: translateY(-1px);
         }
         
@@ -395,11 +396,21 @@ def main():
         /* Send Button Styling */
         [data-testid="stChatInputSubmitButton"] {
             background-color: #ff7f00 !important;
-            border-radius: 8px !important;
+            border-radius: 50% !important; /* Circular button */
+            width: 35px !important;
+            height: 35px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin-right: 5px;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(255,127,0,0.3);
         }
         [data-testid="stChatInputSubmitButton"] svg {
             fill: #ffffff !important;
             color: #ffffff !important;
+            width: 18px !important;
+            height: 18px !important;
         }
 
         /* Bara de search (Chat Input) alba */
@@ -411,6 +422,17 @@ def main():
             border: 1px solid #e0e0e0;
             border-radius: 12px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 2px !important;
+        }
+        [data-testid="stChatInput"] textarea {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: none !important;
+        }
+        /* Asiguram background alb la focus */
+        [data-testid="stChatInput"] textarea:focus {
+            background-color: #ffffff !important;
+            outline: none !important;
         }
         </style>
         """,
