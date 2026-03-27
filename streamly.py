@@ -277,15 +277,20 @@ def main():
         <style>
         /* Main background and overall text */
         [data-testid="stAppViewContainer"] {
-            background-color: #ffffff; /* White top and bottom sections */
+            background-color: #f0f6fc; /* Light blue main background */
         }
         
+        [data-testid="stHeader"] {
+            background-color: transparent !important;
+        }
+
         /* Light blue area specifically for chat messages */
         [data-testid="stChatMessage"] {
-            background-color: #eef5fc !important; /* Light blue chat bubbles/area */
+            background-color: #ffffff !important; /* White chat bubbles/area */
             border-radius: 12px;
             padding: 0.5rem 1rem;
             margin-bottom: 0.8rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         
         /* Sidebar styling */
@@ -370,11 +375,21 @@ def main():
         
         /* Chat header and UI improvements */
         .chat-header {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 800;
-            color: #000000 !important; /* Black Header */
+            color: #ff7f00 !important; /* Orange Header */
             margin: 0;
-            padding-bottom: 1rem;
+            padding-bottom: 0;
+        }
+        
+        /* Antet (Header) background white */
+        [data-testid="stHorizontalBlock"] {
+            background-color: #ffffff;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 1rem;
         }
         
         /* Send Button Styling */
@@ -385,6 +400,17 @@ def main():
         [data-testid="stChatInputSubmitButton"] svg {
             fill: #ffffff !important;
             color: #ffffff !important;
+        }
+
+        /* Bara de search (Chat Input) alba */
+        [data-testid="stChatInput"] {
+            background-color: transparent !important;
+        }
+        [data-testid="stChatInput"] > div {
+            background-color: #ffffff !important;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         </style>
         """,
