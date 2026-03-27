@@ -284,13 +284,20 @@ def main():
             background-color: transparent !important;
         }
 
-        /* Light blue area specifically for chat messages */
+        /* Make all chat message bubbles completely transparent */
         [data-testid="stChatMessage"] {
-            background-color: #ffffff !important; /* White chat bubbles/area */
-            border-radius: 12px;
-            padding: 0.5rem 1rem;
+            background-color: transparent !important; 
+            border: none !important;
+            border-radius: 0;
+            padding: 0.5rem 0;
             margin-bottom: 0.8rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: none !important;
+        }
+        [data-testid="stChatMessage"] > div,
+        [data-testid="stChatMessageContent"] {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
         }
         
         /* Sidebar styling */
@@ -357,20 +364,21 @@ def main():
             margin-right: 6px;
         }
         
-        /* Primary button (Clear Chat) */
+        /* Refined primary button (Clear Chat) */
         [data-testid="stBaseButton-secondary"] {
-            background-color: #ff7f00 !important; /* Orange button */
-            color: white !important;
-            border: 1px solid #ff7f00 !important;
-            font-weight: bold;
+            background-color: transparent !important;
+            color: #6b7280 !important;
+            border: 1px solid #d1d5db !important;
+            font-weight: 600;
             border-radius: 8px !important;
-            padding: 0.5rem 1rem !important;
-            box-shadow: 0 4px 6px rgba(255, 127, 0, 0.2);
+            padding: 0.4rem 1.2rem !important;
+            box-shadow: none !important;
             transition: all 0.2s ease;
         }
         [data-testid="stBaseButton-secondary"]:hover {
-            background-color: #e67300 !important;
-            border-color: #e67300 !important;
+            background-color: #f3f4f6 !important;
+            border-color: #9ca3af !important;
+            color: #374151 !important;
             transform: translateY(-1px);
         }
         
@@ -385,12 +393,15 @@ def main():
         
         /* Antet (Header) background white */
         [data-testid="stHorizontalBlock"] {
-            background-color: #ffffff;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 1rem;
+            background-color: #ffffff !important;
+            padding: 2rem 5rem !important;
+            margin: -6rem -5rem 2rem -5rem !important; /* Extindem pt efect full-width vizual */
+            border-bottom: 1px solid #e5e7eb !important;
+            border-radius: 0 !important;
+            align-items: center !important;
+            box-shadow: none !important;
+            width: calc(100% + 10rem) !important;
+            max-width: none !important;
         }
         
         /* Send Button Styling */
@@ -498,8 +509,6 @@ def main():
     with col1:
         st.markdown("<h2 class='chat-header'>Chat</h2>", unsafe_allow_html=True)
     with col2:
-        # Pushing the button slightly down to align with the text
-        st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
         if st.button("🔄 Clear Chat"):
             st.session_state.history = []
             st.session_state.conversation_history = initialize_conversation()
