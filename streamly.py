@@ -219,7 +219,8 @@ def on_chat_submit(chat_input, latest_updates):
 
             run = client.beta.threads.runs.create_and_poll(
                 thread_id=thread_id,
-                assistant_id=ASSISTANT_ID
+                assistant_id=ASSISTANT_ID,
+                additional_instructions="Please ALWAYS use the file_search tool to search your uploaded knowledge base before answering."
             )
 
             if run.status != "completed":
