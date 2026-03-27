@@ -220,7 +220,8 @@ def on_chat_submit(chat_input, latest_updates):
             run = client.beta.threads.runs.create_and_poll(
                 thread_id=thread_id,
                 assistant_id=ASSISTANT_ID,
-                additional_instructions="Please ALWAYS use the file_search tool to search your uploaded knowledge base before answering."
+                tools=[{"type": "file_search"}],
+                additional_instructions="Recomandare de sistem: Folosește obligatoriu cunoștințele din fișierele și baza ta de date atașată (file_search) pentru a răspunde detaliat la întrebări."
             )
 
             if run.status != "completed":
