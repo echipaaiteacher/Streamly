@@ -465,40 +465,40 @@ def main():
     
     # (Removed the explicit <hr> line separating logo and ABOUT text so it perfectly matches the image)
     
-    st.sidebar.markdown("<div class='sidebar-heading'>ABOUT</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div class='sidebar-heading'>DESPRE</div>", unsafe_allow_html=True)
     st.sidebar.markdown("""
     <div style='font-size: 0.9rem; line-height: 1.4; color: white;'>
-    An AI-powered educational assistant designed to help you learn across multiple subjects including Mathematics, History, and Romanian Language.
+    Un asistent educațional inteligent, creat pentru a te ajuta să înveți la o varietate de materii, inclusiv Matematică, Istorie și Limba Română.
     </div>
     """, unsafe_allow_html=True)
     
-    st.sidebar.markdown("<div class='sidebar-heading'>FEATURES</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div class='sidebar-heading'>FUNCȚIONALITĂȚI</div>", unsafe_allow_html=True)
     st.sidebar.markdown("""
-    <div class='feature-item'><span>.</span>Interactive conversational learning</div>
-    <div class='feature-item'><span>.</span>Subject-specific tutoring</div>
-    <div class='feature-item'><span>.</span>Step-by-step explanations</div>
-    <div class='feature-item'><span>.</span>24/7 learning support</div>
+    <div class='feature-item'><span>.</span>Învățare interactivă prin conversații</div>
+    <div class='feature-item'><span>.</span>Tutorat personalizat pe materii</div>
+    <div class='feature-item'><span>.</span>Explicații pas cu pas</div>
+    <div class='feature-item'><span>.</span>Suport educațional 24/7</div>
     """, unsafe_allow_html=True)
 
-    st.sidebar.markdown("<div class='sidebar-heading'>HOW TO USE</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div class='sidebar-heading'>CUM FUNCȚIONEAZĂ</div>", unsafe_allow_html=True)
     st.sidebar.markdown("""
     <div style='font-size: 0.9rem; line-height: 1.4; color: white;'>
-    Simply type your question in the chat below and get instant, personalized responses. Ask about any topic, request explanations, or seek help with homework.
+    Scrie întrebarea ta în chat-ul de mai jos și primește răspunsuri instantanee și personalizate. Poți întreba despre orice subiect, poți cere detalii sau poți solicita ajutor la teme.
     </div>
     """, unsafe_allow_html=True)
     
-    st.sidebar.markdown("<div class='sidebar-heading'>SUPPORTED SUBJECTS</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div class='sidebar-heading'>MATERII DISPONIBILE</div>", unsafe_allow_html=True)
     st.sidebar.markdown("""
     <div class='subject-container'>
-        <div class='subject-pill'><span>📐</span> Mathematics</div>
-        <div class='subject-pill'><span>📜</span> History</div>
-        <div class='subject-pill'><span>🇷🇴</span> Romanian</div>
-        <div class='subject-pill'><span>🔬</span> Science</div>
-        <div class='subject-pill'><span>💻</span> Programming</div>
+        <div class='subject-pill'><span>📐</span> Matematică</div>
+        <div class='subject-pill'><span>📜</span> Istorie</div>
+        <div class='subject-pill'><span>🇷🇴</span> Română</div>
+        <div class='subject-pill'><span>🔬</span> Științe</div>
+        <div class='subject-pill'><span>💻</span> Programare</div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.sidebar.markdown("<div style='border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; margin-top: 1rem; text-align: center; color: white; font-size: 0.85rem;'>Powered by AI Technology</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div style='border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; margin-top: 1rem; text-align: center; color: white; font-size: 0.85rem;'>Susținut de Inteligența Artificială</div>", unsafe_allow_html=True)
 
     # Main Chat Area
     st.write("") # small padding
@@ -506,13 +506,14 @@ def main():
     with col1:
         st.markdown("<h2 class='chat-header'>Chat</h2>", unsafe_allow_html=True)
     with col2:
-        if st.button("🔄 Clear Chat"):
-            st.session_state.history = []
-            st.session_state.conversation_history = initialize_conversation()
-            st.rerun()
+        if st.button("💡 Cere Hint"):
+            hint_message = "Mă poți ajuta cu un mic indiciu pentru a continua? Te rog nu-mi da rezolvarea completă."
+            latest_updates = load_streamlit_updates()
+            with st.spinner("Pregătesc indiciul..."):
+                on_chat_submit(hint_message, latest_updates)
 
     # Chat Input Processing
-    chat_input = st.chat_input("Ask your AI teacher anything...")
+    chat_input = st.chat_input("Întreabă-ți profesorul AI orice...")
     if chat_input:
         latest_updates = load_streamlit_updates()
         on_chat_submit(chat_input, latest_updates)
