@@ -342,7 +342,12 @@ def main():
         }
         
         [data-testid="stHeader"] {
-            background-color: transparent !important;
+            display: none !important;
+        }
+        
+        .block-container {
+            padding-top: 0rem !important;
+            margin-top: 0rem !important;
         }
 
         /* Make all chat message bubbles completely transparent */
@@ -456,7 +461,7 @@ def main():
         [data-testid="stHorizontalBlock"] {
             background-color: #000000 !important;
             padding: 2rem 5rem !important;
-            margin: -6rem -5rem 2rem -5rem !important; /* Extindem pt efect full-width vizual */
+            margin: 0rem -5rem 2rem -5rem !important; /* Am eliminat marginea negativă pentru că acum pornește de fix de sus */
             border-bottom: 1px solid #333333 !important;
             border-radius: 0 !important;
             align-items: center !important;
