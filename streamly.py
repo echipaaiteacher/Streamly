@@ -346,11 +346,7 @@ def main():
             top: 10px !important; /* Mută iconițele doar puțin mai jos de linia de sus, la începutul barei negre */
         }
         
-        /* Schimbă iconițele din header (Share, Menu) în portocaliu */
-        [data-testid="stHeader"] * {
-            color: #ff7f00 !important;
-            fill: #ff7f00 !important;
-        }
+
 
         /* Make all chat message bubbles completely transparent */
         [data-testid="stChatMessage"] {
