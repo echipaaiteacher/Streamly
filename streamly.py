@@ -196,6 +196,64 @@ def get_latest_update_from_json(keyword, latest_updates):
 def on_chat_submit(chat_input, latest_updates):
     user_input = chat_input.strip()
 
+    # Verificare dacă utilizatorul este blocat temporar
+    if st.session_state.get("block_until", 0) > time.time():
+        st.session_state.history.append({"role": "user", "content": user_input})
+        st.session_state.history.append({"role": "assistant", "content": "Conversația a fost închisă temporar din cauza limbajului neadecvat. Te rog să aștepți expirarea celor 5 minute."})
+        try:
+            st.rerun()
+        except AttributeError:
+            st.experimental_rerun()
+        return
+    elif st.session_state.get("block_until", 0) != 0 and st.session_state.get("block_until", 0) <= time.time():
+        # Expirarea blocajului, resetăm contoarele
+        st.session_state.block_until = 0
+        st.session_state.abatere_count = 0
+        st.session_state.injurii_count = 0
+
+    # Verificare moderare limbaj cu LLM (o pre-verificare rapidă)
+    try:
+        prompt_check = f'''Ești un asistent AI care monitorizează limbajul utilizatorului. Trebuie să detectezi limbajul jignitor sau injurios. Analizează textul și returnează un JSON strict cu următoarele câmpuri: "is_offensive" (boolean): true dacă mesajul conține cuvinte jignitoare, insulte sau înjurături. "injurii_count" (int): numărul de cuvinte injurioase/vulgare găsite în text. Text de analizat: "{user_input}"'''
+        mod_response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            response_format={"type": "json_object"},
+            messages=[{"role": "system", "content": prompt_check}],
+            max_tokens=60
+        )
+        mod_result = json.loads(mod_response.choices[0].message.content)
+        is_offensive = mod_result.get("is_offensive", False)
+        new_injurii = mod_result.get("injurii_count", 0)
+        
+        if is_offensive or new_injurii > 0:
+            st.session_state.abatere_count += 1
+            st.session_state.injurii_count += new_injurii
+            
+            assistant_reply = ""
+            if st.session_state.abatere_count >= 3 or st.session_state.injurii_count >= 3:
+                assistant_reply = "Conversația a fost închisă pentru 5 minute din cauza limbajului neadecvat. Te rog să revii după acest interval."
+                st.session_state.block_until = time.time() + 300
+            elif st.session_state.abatere_count == 2:
+                assistant_reply = "Te rog din nou să ai grijă la limbaj. Dacă vei continua, conversația va fi oprită temporar."
+            else:
+                assistant_reply = "Te rog să folosești un limbaj respectuos."
+                
+            st.session_state.history.append({"role": "user", "content": user_input})
+            st.session_state.history.append({"role": "assistant", "content": assistant_reply})
+            
+            if st.session_state.abatere_count >= 3 or st.session_state.injurii_count >= 3:
+                # Trigger a fresh UI reload immediately so the input box hides:
+                try:
+                    st.rerun()
+                except AttributeError:
+                    st.experimental_rerun()
+            return
+            
+    except Exception as e:
+        # Ignore moderation errors to not break chat, unless it was our rerun instruction:
+        if isinstance(e, (st.runtime.scriptrunner.StopException, getattr(st, 'StopException', type(None)))):
+            raise e
+        logging.error(f"Eroare la moderarea limbajului: {e}")
+
     try:
         assistant_reply = ""
 
@@ -258,6 +316,12 @@ def initialize_session_state():
         st.session_state.conversation_history = []
     if "thread_id" not in st.session_state:
         st.session_state.thread_id = None
+    if "abatere_count" not in st.session_state:
+        st.session_state.abatere_count = 0
+    if "injurii_count" not in st.session_state:
+        st.session_state.injurii_count = 0
+    if "block_until" not in st.session_state:
+        st.session_state.block_until = 0
 
 def main():
     """
@@ -388,12 +452,12 @@ def main():
             padding-bottom: 0;
         }
         
-        /* Antet (Header) background white */
+        /* Antet (Header) background black */
         [data-testid="stHorizontalBlock"] {
-            background-color: #ffffff !important;
+            background-color: #000000 !important;
             padding: 2rem 5rem !important;
             margin: -6rem -5rem 2rem -5rem !important; /* Extindem pt efect full-width vizual */
-            border-bottom: 1px solid #e5e7eb !important;
+            border-bottom: 1px solid #333333 !important;
             border-radius: 0 !important;
             align-items: center !important;
             box-shadow: none !important;
@@ -421,25 +485,26 @@ def main():
             height: 18px !important;
         }
 
-        /* Bara de search (Chat Input) alba */
+        /* Bara de search (Chat Input) neagra */
         [data-testid="stChatInput"] {
             background-color: transparent !important;
         }
         [data-testid="stChatInput"] > div {
-            background-color: #ffffff !important;
-            border: 1px solid #e0e0e0;
+            background-color: #000000 !important;
+            border: 1px solid #333333;
             border-radius: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
             padding: 2px !important;
         }
         [data-testid="stChatInput"] textarea {
-            background-color: #ffffff !important;
-            color: #000000 !important;
+            background-color: #000000 !important;
+            color: #ffffff !important; /* Text alb pentru vizibilitate pe fundal negru */
             border: none !important;
         }
-        /* Asiguram background alb la focus */
+        /* Asiguram background negru la focus */
         [data-testid="stChatInput"] textarea:focus {
-            background-color: #ffffff !important;
+            background-color: #000000 !important;
+            color: #ffffff !important;
             outline: none !important;
         }
         </style>
@@ -468,7 +533,7 @@ def main():
     st.sidebar.markdown("<div class='sidebar-heading'>DESPRE</div>", unsafe_allow_html=True)
     st.sidebar.markdown("""
     <div style='font-size: 0.9rem; line-height: 1.4; color: white;'>
-    Un asistent educațional inteligent, creat pentru a te ajuta să înveți la o varietate de materii, inclusiv Matematică, Istorie și Limba Română.
+    Un asistent educațional inteligent, creat pentru a te ajuta să înveți la Limba Română.
     </div>
     """, unsafe_allow_html=True)
     
@@ -490,15 +555,20 @@ def main():
     st.sidebar.markdown("<div class='sidebar-heading'>MATERII DISPONIBILE</div>", unsafe_allow_html=True)
     st.sidebar.markdown("""
     <div class='subject-container'>
-        <div class='subject-pill'><span>📐</span> Matematică</div>
-        <div class='subject-pill'><span>📜</span> Istorie</div>
         <div class='subject-pill'><span>🇷🇴</span> Română</div>
-        <div class='subject-pill'><span>🔬</span> Științe</div>
-        <div class='subject-pill'><span>💻</span> Programare</div>
     </div>
     """, unsafe_allow_html=True)
 
     st.sidebar.markdown("<div style='border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; margin-top: 1rem; text-align: center; color: white; font-size: 0.85rem;'>Susținut de Inteligența Artificială</div>", unsafe_allow_html=True)
+
+    # Verificare dacă utilizatorul este blocat temporar
+    is_blocked = False
+    if st.session_state.get("block_until", 0) > time.time():
+        is_blocked = True
+    elif st.session_state.get("block_until", 0) != 0 and st.session_state.get("block_until", 0) <= time.time():
+        st.session_state.block_until = 0
+        st.session_state.abatere_count = 0
+        st.session_state.injurii_count = 0
 
     # Main Chat Area
     st.write("") # small padding
@@ -506,17 +576,25 @@ def main():
     with col1:
         st.markdown("<h2 class='chat-header'>Chat</h2>", unsafe_allow_html=True)
     with col2:
-        if st.button("💡 Cere Hint"):
+        if st.button("💡 Cere Hint", disabled=is_blocked):
             hint_message = "Mă poți ajuta cu un mic indiciu pentru a continua? Te rog nu-mi da rezolvarea completă."
             latest_updates = load_streamlit_updates()
             with st.spinner("Pregătesc indiciul..."):
                 on_chat_submit(hint_message, latest_updates)
 
     # Chat Input Processing
-    chat_input = st.chat_input("Întreabă-ți profesorul AI orice...")
-    if chat_input:
-        latest_updates = load_streamlit_updates()
-        on_chat_submit(chat_input, latest_updates)
+    if is_blocked:
+        remaining = int(st.session_state.block_until - time.time())
+        mins, secs = divmod(remaining, 60)
+        st.error(f"🚫 Chat-ul este restricționat din cauza limbajului neadecvat. Te rugăm să aștepți {mins} minute și {secs} secunde.")
+        # Buton de refresh pentru a verifica dacă a expirat timpul
+        if st.button("Verifică status"):
+            st.rerun()
+    else:
+        chat_input = st.chat_input("Întreabă-ți profesorul AI orice...")
+        if chat_input:
+            latest_updates = load_streamlit_updates()
+            on_chat_submit(chat_input, latest_updates)
 
     # Display chat history sequentially
     for message in st.session_state.history[-NUMBER_OF_MESSAGES_TO_DISPLAY:]:
