@@ -343,7 +343,7 @@ def main():
         
         [data-testid="stHeader"] {
             background-color: transparent !important;
-            top: 60px !important; /* Mută mai jos iconițele și meniul ascuns */
+            top: 10px !important; /* Mută iconițele doar puțin mai jos de linia de sus, la începutul barei negre */
         }
 
         /* Make all chat message bubbles completely transparent */
