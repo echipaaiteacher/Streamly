@@ -6,6 +6,10 @@ import json
 import requests
 import base64
 from openai import OpenAI, OpenAIError
+import os
+
+# Base directory for absolute paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -336,17 +340,46 @@ def main():
     st.markdown(
         """
         <style>
-        /* Main background and overall text */
+        /* Main background — saturated light blue matching Figma */
         [data-testid="stAppViewContainer"] {
-            background-color: #f0f6fc; /* Light blue main background */
+            background-color: #d4e5f7 !important;
         }
         
         [data-testid="stHeader"] {
-            background-color: transparent !important;
-            top: 10px !important; /* Mută iconițele doar puțin mai jos de linia de sus, la începutul barei negre */
+            background-color: #ffffff !important;
         }
-        
+        /* Deploy button — black text */
+        [data-testid="stAppDeployButton"],
+        [data-testid="stAppDeployButton"] * {
+            color: #000000 !important;
+        }
 
+        /* Running/Stop status — orange icon, black text */
+        [data-testid="stStatusWidget"] {
+            color: #000000 !important;
+        }
+        [data-testid="stStatusWidget"] svg {
+            color: #ff7f00 !important;
+        }
+
+        /* Menu 3-dot button — navy bg, white dots */
+        [data-testid="stMainMenu"] button {
+            background-color: #1b3a97 !important;
+            border-radius: 6px !important;
+            padding: 4px !important;
+            color: #ffffff !important;
+        }
+        [data-testid="stMainMenu"] button svg {
+            color: #ffffff !important;
+            fill: #ffffff !important;
+        }
+        /* Override the generic stHeader rule specifically for menu icon paths */
+        [data-testid="stMainMenu"] path:not([fill="none"]) {
+            fill: #ffffff !important;
+        }
+        [data-testid="stMainMenu"] path[fill="none"] {
+            fill: none !important;
+        }
 
         /* Make all chat message bubbles completely transparent */
         [data-testid="stChatMessage"] {
@@ -394,7 +427,7 @@ def main():
             color: #ff7f00; /* Vibrant Orange bullets */
             margin-right: 8px;
             font-weight: bold;
-            font-size: 1.3rem; /* Make the dot stand out */
+            font-size: 1.3rem;
             line-height: 0;
         }
         
@@ -409,7 +442,7 @@ def main():
             display: inline-flex;
             align-items: center;
             background-color: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.6); /* White accent border for contrast against blue */
+            border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 15px;
             padding: 4px 10px;
             font-size: 0.8rem;
@@ -419,7 +452,7 @@ def main():
         
         /* Chat message text color to be black */
         [data-testid="stChatMessageContent"] * {
-            color: #000000 !important; /* Black text */
+            color: #000000 !important;
         }
         .subject-pill:hover {
             background-color: rgba(255, 255, 255, 0.3);
@@ -428,50 +461,77 @@ def main():
             margin-right: 6px;
         }
         
-        /* Refined primary button (Clear Chat) */
+        /* Orange primary button (Cere Hint) — matching Figma */
         [data-testid="stBaseButton-secondary"] {
-            background-color: transparent !important;
-            color: #6b7280 !important;
-            border: 1px solid #d1d5db !important;
+            background-color: #ff7f00 !important;
+            color: #ffffff !important;
+            border: none !important;
             font-weight: 600;
             border-radius: 8px !important;
             padding: 0.4rem 1.2rem !important;
-            box-shadow: none !important;
+            box-shadow: 0 2px 4px rgba(255, 127, 0, 0.3) !important;
             transition: all 0.2s ease;
+            white-space: nowrap !important;
+            font-size: 0.9rem !important;
+            min-width: fit-content !important;
         }
         [data-testid="stBaseButton-secondary"]:hover {
-            background-color: #f3f4f6 !important;
-            border-color: #9ca3af !important;
-            color: #374151 !important;
+            background-color: #e67300 !important;
+            color: #ffffff !important;
             transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(255, 127, 0, 0.4) !important;
+        }
+
+        /* Responsive: smaller Cere Hint on narrow screens */
+        @media (max-width: 768px) {
+            [data-testid="stBaseButton-secondary"] {
+                padding: 0.3rem 0.8rem !important;
+                font-size: 0.8rem !important;
+            }
+        }
+        @media (max-width: 480px) {
+            [data-testid="stBaseButton-secondary"] {
+                padding: 0.25rem 0.6rem !important;
+                font-size: 0.7rem !important;
+            }
         }
         
-        /* Chat header and UI improvements */
+        /* Chat header */
         .chat-header {
             font-size: 2.2rem;
             font-weight: 800;
-            color: #ff7f00 !important; /* Orange Header */
+            color: #ff7f00 !important;
             margin: 0;
             padding-bottom: 0;
         }
         
-        /* Antet (Header) background black */
+        /* Header row — white, FIXED floating at top */
         [data-testid="stHorizontalBlock"] {
-            background-color: #000000 !important;
-            padding: 2rem 5rem !important;
-            margin: -6rem -5rem 2rem -5rem !important; /* Extindem pt efect full-width vizual */
-            border-bottom: 1px solid #333333 !important;
+            background-color: #ffffff !important;
+            padding: 1rem 2rem !important;
+            border-bottom: 1px solid #e0e4e8 !important;
             border-radius: 0 !important;
             align-items: center !important;
-            box-shadow: none !important;
-            width: calc(100% + 10rem) !important;
-            max-width: none !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+            position: fixed !important;
+            top: 2.8rem !important; /* Just below the stHeader bar */
+            left: 18rem !important; /* After sidebar */
+            right: 0 !important;
+            z-index: 999 !important;
+            margin: 0 !important;
+            width: auto !important;
+        }
+
+        /* Push main content down so it doesn't hide behind the fixed header */
+        .block-container, 
+        [data-testid="stMainBlockContainer"] {
+            padding-top: 6rem !important;
         }
         
-        /* Send Button Styling */
+        /* Send Button — rounded square matching Figma */
         [data-testid="stChatInputSubmitButton"] {
             background-color: #ff7f00 !important;
-            border-radius: 50% !important; /* Circular button */
+            border-radius: 8px !important;
             width: 35px !important;
             height: 35px !important;
             display: inline-flex !important;
@@ -488,27 +548,42 @@ def main():
             height: 18px !important;
         }
 
-        /* Bara de search (Chat Input) neagra */
+        /* Chat Input — white background matching Figma */
         [data-testid="stChatInput"] {
             background-color: transparent !important;
         }
         [data-testid="stChatInput"] > div {
-            background-color: #000000 !important;
-            border: 1px solid #333333;
-            border-radius: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            background-color: #ffffff !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
             padding: 2px !important;
         }
         [data-testid="stChatInput"] textarea {
-            background-color: #000000 !important;
-            color: #ffffff !important; /* Text alb pentru vizibilitate pe fundal negru */
+            background-color: #ffffff !important;
+            color: #000000 !important;
             border: none !important;
+            caret-color: #000000 !important;
         }
-        /* Asiguram background negru la focus */
+        [data-testid="stChatInput"] textarea::placeholder {
+            color: #9ca3af !important; /* Gray placeholder text */
+            opacity: 1 !important;
+        }
         [data-testid="stChatInput"] textarea:focus {
-            background-color: #000000 !important;
-            color: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
             outline: none !important;
+            caret-color: #000000 !important;
+        }
+
+        /* Bottom container — white background */
+        [data-testid="stBottomBlockContainer"] {
+            background-color: #ffffff !important;
+        }
+
+        /* Chat input box shadow for visibility on white */
+        [data-testid="stChatInput"] > div {
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
         }
         </style>
         """,
@@ -516,7 +591,7 @@ def main():
     )
 
     # Sidebar Content
-    img_path = "imgs/logo.jpg"
+    img_path = os.path.join(BASE_DIR, "imgs", "logo.jpg")
     img_base64 = img_to_base64(img_path)
     if img_base64:
         st.sidebar.markdown(
@@ -575,7 +650,7 @@ def main():
 
     # Main Chat Area
     st.write("") # small padding
-    col1, col2 = st.columns([5, 1])
+    col1, col2 = st.columns([3, 1])
     with col1:
         st.markdown("<h2 class='chat-header'>Chat</h2>", unsafe_allow_html=True)
     with col2:
@@ -603,7 +678,7 @@ def main():
     for message in st.session_state.history[-NUMBER_OF_MESSAGES_TO_DISPLAY:]:
         role = message["role"]
         # Use logo for assistant, default for user
-        avatar_image = "imgs/logo.jpg" if role == "assistant" else "👤"
+        avatar_image = os.path.join(BASE_DIR, "imgs", "logo.jpg") if role == "assistant" else "👤"
         with st.chat_message(role, avatar=avatar_image):
             st.write(message["content"])
 
